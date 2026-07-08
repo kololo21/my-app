@@ -192,15 +192,13 @@ export default function ScannerTools({ onAddFromScanner }: ScannerToolsProps) {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6" id="smart-scanner-tools">
-      
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-8 mb-6" id="smart-scanner-tools">
+
       {/* 1. Receipt Scanning OCR */}
-      <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+      <div className="border-l-4 border-fuchsia-400 pl-5 flex flex-col justify-between">
         <div>
-          <div className="flex items-center gap-3.5 mb-2">
-            <div className="bg-indigo-50 text-indigo-600 p-2 rounded-xl">
-              <Receipt className="w-5 h-5" />
-            </div>
+          <div className="flex items-center gap-2.5 mb-2">
+            <Receipt className="w-5 h-5 text-fuchsia-600" />
             <div>
               <h3 className="text-sm font-extrabold text-gray-950">📸 AI自動レシート読み取り</h3>
               <p className="text-xs text-gray-405 font-medium">レシートを撮影・アップロードして支出を自動記録</p>
@@ -335,7 +333,7 @@ export default function ScannerTools({ onAddFromScanner }: ScannerToolsProps) {
               <button
                 type="button"
                 onClick={addScannedToKakeibo}
-                className="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-lg py-2 text-xs font-bold shadow-md shadow-indigo-100 flex items-center justify-center gap-1 cursor-pointer transition-transform hover:scale-[1.01]"
+                className="mt-4 w-full bg-gradient-to-r from-fuchsia-600 to-indigo-600 hover:brightness-110 text-white rounded-full py-2.5 text-xs font-bold shadow-md shadow-fuchsia-200 flex items-center justify-center gap-1 cursor-pointer transition-transform hover:scale-[1.01]"
               >
                 <Check className="w-4.5 h-4.5 text-emerald-300" />
                 <span>家計簿にこの内容で自動追加する</span>
@@ -346,12 +344,10 @@ export default function ScannerTools({ onAddFromScanner }: ScannerToolsProps) {
       </div>
 
       {/* 2. JAN Barcode Analyzer / Predict retail value */}
-      <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+      <div className="border-l-4 border-indigo-400 pl-5 flex flex-col justify-between">
         <div>
-          <div className="flex items-center gap-3.5 mb-2">
-            <div className="bg-indigo-50 text-indigo-600 p-2 rounded-xl">
-              <Barcode className="w-5 h-5" />
-            </div>
+          <div className="flex items-center gap-2.5 mb-2">
+            <Barcode className="w-5 h-5 text-indigo-600" />
             <div>
               <h3 className="text-sm font-extrabold text-gray-950">バーコード平均価格予想</h3>
               <p className="text-xs text-gray-405 font-medium">JANコード等を入力して日本の市場平均価格を自動補完</p>
@@ -453,7 +449,7 @@ export default function ScannerTools({ onAddFromScanner }: ScannerToolsProps) {
               <button
                 type="button"
                 onClick={addBarcodeToKakeibo}
-                className="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-805 text-white rounded-lg py-2 text-xs font-bold shadow-md shadow-indigo-100 flex items-center justify-center gap-1 cursor-pointer transition-transform hover:scale-[1.01]"
+                className="mt-4 w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:brightness-110 text-white rounded-full py-2.5 text-xs font-bold shadow-md shadow-indigo-200 flex items-center justify-center gap-1 cursor-pointer transition-transform hover:scale-[1.01]"
               >
                 <Check className="w-4 h-4 text-emerald-300" />
                 <span>この金額で家計簿に記録</span>

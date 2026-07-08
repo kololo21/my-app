@@ -52,11 +52,9 @@ export default function TransactionForm({ onAddTransaction, activeMember }: Tran
   }, [activeMember]);
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm mb-6" id="add-record-form">
-      <div className="flex items-center gap-3.5 mb-5">
-        <div className="bg-indigo-50 text-indigo-600 p-2 rounded-xl">
-          <PlusCircle className="w-5 h-5" />
-        </div>
+    <div className="mb-8 pb-8 border-b-2 border-indigo-100/70" id="add-record-form">
+      <div className="flex items-center gap-2.5 mb-5">
+        <PlusCircle className="w-5 h-5 text-indigo-600" />
         <div>
           <h3 className="text-sm font-extrabold text-gray-900">収支・収入・区分記入</h3>
           <p className="text-xs text-gray-400 font-medium">個人の出費または家族の共同出費・NISA積立を手動記録</p>
@@ -65,13 +63,13 @@ export default function TransactionForm({ onAddTransaction, activeMember }: Tran
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Is Income / Expense toggle */}
-        <div className="grid grid-cols-2 gap-1.5 p-1 bg-gray-50 rounded-xl border border-gray-200/50">
+        <div className="grid grid-cols-2 gap-1.5 p-1 bg-white/70 rounded-xl">
           <button
             type="button"
             onClick={() => setIsIncome(false)}
             className={`py-2 rounded-lg text-xs font-bold tracking-tight transition-all cursor-pointer ${
-              !isIncome 
-                ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-100' 
+              !isIncome
+                ? 'bg-gradient-to-r from-rose-500 to-orange-500 text-white shadow-md shadow-rose-200'
                 : 'text-gray-500 hover:text-gray-950 hover:bg-white/50'
             }`}
           >
@@ -81,8 +79,8 @@ export default function TransactionForm({ onAddTransaction, activeMember }: Tran
             type="button"
             onClick={() => setIsIncome(true)}
             className={`py-2 rounded-lg text-xs font-bold tracking-tight transition-all cursor-pointer ${
-              isIncome 
-                ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-100' 
+              isIncome
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-200'
                 : 'text-gray-500 hover:text-gray-950 hover:bg-white/50'
             }`}
           >
@@ -213,7 +211,7 @@ export default function TransactionForm({ onAddTransaction, activeMember }: Tran
           <button
             type="submit"
             id="btn-add-transaction"
-            className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs tracking-tight px-6 py-3 rounded-lg flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-indigo-100 transition-all hover:translate-y-[-1px] active:translate-y-0"
+            className="w-full sm:w-auto bg-gradient-to-r from-indigo-600 to-violet-600 hover:brightness-110 text-white font-bold text-xs tracking-tight px-7 py-3 rounded-full flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-indigo-200 transition-all hover:translate-y-[-1px] active:translate-y-0"
           >
             <PlusCircle className="w-4 h-4" />
             <span>このレコードを登録</span>

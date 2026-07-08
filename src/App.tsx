@@ -187,7 +187,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] py-8 px-4 sm:px-6 lg:px-8 font-sans selection:bg-indigo-600 selection:text-white antialiased">
+    <div className="min-h-screen bg-gradient-to-b from-indigo-50/50 via-white to-white py-8 px-4 sm:px-6 lg:px-8 font-sans selection:bg-indigo-600 selection:text-white antialiased">
       <div className="max-w-7xl mx-auto">
         
         {/* Navigation Core */}
@@ -226,7 +226,7 @@ export default function App() {
                 />
 
                 {/* Reset helper */}
-                <div className="bg-white border border-gray-200 rounded-2xl p-5 flex items-center justify-between text-xs mb-6">
+                <div className="flex items-center justify-between text-xs mb-6 pt-3 border-t border-gray-100">
                   <div className="flex gap-2.5 items-center">
                     <AlertCircle className="w-4 h-4 text-gray-400" />
                     <span className="text-gray-500 font-semibold">デバッグ・お試し用</span>
@@ -242,9 +242,9 @@ export default function App() {
               </div>
 
               {/* Right Column: Interactive Ledger Table */}
-              <div className="lg:col-span-2 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between" id="transactions-ledger">
+              <div className="lg:col-span-2 border-l-4 border-indigo-400 pl-5 flex flex-col justify-between" id="transactions-ledger">
                 <div>
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 pb-4 border-b border-gray-100">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 pb-4 border-b-2 border-indigo-100/70">
                     <div>
                       <h3 className="text-sm font-extrabold text-gray-950 flex items-center gap-2">
                         <FileSpreadsheet className="w-4.5 h-4.5 text-indigo-600" />

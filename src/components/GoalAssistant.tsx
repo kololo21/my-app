@@ -105,15 +105,13 @@ export default function GoalAssistant({ goal, transactions, subscriptions, onCha
   const forecast12Months = netMonthlySurplus * 12;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 font-sans" id="goal-ai-assistant-sec">
-      
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-8 gap-y-8 mb-6 font-sans" id="goal-ai-assistant-sec">
+
       {/* 1. Goal Setting & Customization */}
-      <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+      <div className="border-l-4 border-amber-400 pl-5 flex flex-col justify-between">
         <div>
-          <div className="flex items-center gap-3.5 mb-3">
-            <div className="bg-indigo-50 text-indigo-600 p-2 rounded-xl">
-              <Goal className="w-5 h-5" />
-            </div>
+          <div className="flex items-center gap-2.5 mb-3">
+            <Goal className="w-5 h-5 text-amber-500" />
             <div>
               <h3 className="text-sm font-extrabold text-gray-950">目標貯金額とNISAの設定</h3>
               <p className="text-xs text-gray-400 font-medium font-sans">達成目標と新NISA（積立投資）を管理</p>
@@ -121,9 +119,9 @@ export default function GoalAssistant({ goal, transactions, subscriptions, onCha
           </div>
 
           {!isEditing ? (
-            <div className="space-y-4 my-2">
-              <div className="bg-gray-50 rounded-xl p-4 border border-gray-200/50">
-                <span className="text-[10px] text-gray-405 font-bold uppercase tracking-wider block mb-1 font-mono">
+            <div className="space-y-5 my-2">
+              <div>
+                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mb-1 font-mono">
                   現在の貯金目標:
                 </span>
                 <p className="font-extrabold text-gray-900 text-sm flex items-center gap-1">
@@ -133,30 +131,28 @@ export default function GoalAssistant({ goal, transactions, subscriptions, onCha
                 <p className="text-2xl font-black text-gray-950 mt-2">
                   {formatYen(goal.targetAmount)}
                 </p>
-                <div className="flex items-center justify-between text-[11px] text-gray-500 font-semibold mt-3 pt-2.5 border-t border-gray-200">
+                <div className="flex items-center justify-between text-[11px] text-gray-500 font-semibold mt-3 pt-2.5 border-t border-gray-100">
                   <span className="font-mono">期日: {goal.deadline}</span>
                   <span className="text-indigo-600 font-bold">順調にアシスト中</span>
                 </div>
               </div>
 
-              <div className="bg-indigo-50/20 border border-indigo-100 rounded-xl p-4 flex items-center justify-between">
+              <div className="flex items-center justify-between border-l-2 border-indigo-200 pl-3">
                 <div>
-                  <span className="text-[10px] text-indigo-605 font-bold uppercase tracking-wider block mb-0.5 font-mono">
+                  <span className="text-[10px] text-indigo-600 font-bold uppercase tracking-wider block mb-0.5 font-mono">
                     新NISA 積立額設定:
                   </span>
                   <p className="text-sm font-black text-indigo-900">
                     {formatYen(goal.nisaMonthlyAmount)} <span className="text-xs font-semibold text-indigo-400">/ 月</span>
                   </p>
                 </div>
-                <div className="bg-indigo-50 text-indigo-600 p-2 rounded-xl">
-                  <TrendingUp className="w-4 h-4" />
-                </div>
+                <TrendingUp className="w-4 h-4 text-indigo-500" />
               </div>
 
               <button
                 type="button"
                 onClick={() => setIsEditing(true)}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg py-2.5 text-xs font-bold shadow-md shadow-indigo-100 cursor-pointer transition-colors"
+                className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:brightness-110 text-white rounded-full py-2.5 text-xs font-bold shadow-md shadow-amber-200 cursor-pointer transition-all"
               >
                 目標設定を変更する
               </button>
@@ -219,7 +215,7 @@ export default function GoalAssistant({ goal, transactions, subscriptions, onCha
                 </button>
                 <button
                   type="submit"
-                  className="w-1/2 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition-colors cursor-pointer shadow-sm shadow-indigo-100"
+                  className="w-1/2 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:brightness-110 text-white rounded-full text-xs font-bold transition-all cursor-pointer shadow-sm shadow-amber-200"
                 >
                   設定を適用
                 </button>
@@ -230,13 +226,11 @@ export default function GoalAssistant({ goal, transactions, subscriptions, onCha
       </div>
 
       {/* 2. AI Savings Coaching Panel */}
-      <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between col-span-1 lg:col-span-2">
+      <div className="border-l-4 border-violet-400 pl-5 flex flex-col justify-between col-span-1 lg:col-span-2">
         <div>
           <div className="flex items-center justify-between gap-3 mb-3">
-            <div className="flex items-center gap-3.5">
-              <div className="bg-indigo-50 text-indigo-600 p-2 rounded-xl">
-                <Sparkles className="w-4.5 h-4.5 animate-pulse" />
-              </div>
+            <div className="flex items-center gap-2.5">
+              <Sparkles className="w-4.5 h-4.5 text-violet-600 animate-pulse" />
               <div>
                 <h3 className="text-sm font-extrabold text-gray-950 flex items-center gap-1.5">
                   AI貯金アシストコーチ
@@ -249,16 +243,16 @@ export default function GoalAssistant({ goal, transactions, subscriptions, onCha
               onClick={fetchAiCoaching}
               disabled={isCoaching}
               id="btn-ai-coach"
-              className="bg-gray-50 hover:bg-indigo-50/10 border border-gray-200 text-gray-700 p-2 px-3 rounded-lg text-xs font-bold shrink-0 cursor-pointer flex items-center gap-1.5 transition-all font-mono"
+              className="bg-violet-50 hover:bg-violet-100 text-violet-700 p-2 px-3 rounded-full text-xs font-bold shrink-0 cursor-pointer flex items-center gap-1.5 transition-all font-mono"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${isCoaching ? 'animate-spin text-indigo-650' : 'text-gray-400'}`} />
+              <RefreshCw className={`w-3.5 h-3.5 ${isCoaching ? 'animate-spin text-violet-600' : 'text-violet-400'}`} />
               <span className="hidden sm:inline">AI再診断</span>
             </button>
           </div>
 
           <div className="space-y-3.5 my-2">
             {/* AI Advices bullets */}
-            <div className="bg-gray-50 hover:bg-indigo-50/5 border border-gray-255 rounded-xl p-4 transition-all">
+            <div>
               <span className="text-[9px] bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded font-black uppercase tracking-widest block mb-2 w-fit font-mono">
                 AI SMART ADVICES FOR {activeMember.toUpperCase()}
               </span>

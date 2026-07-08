@@ -66,10 +66,10 @@ export default function AnalyticsCharts({ transactions, activeMember }: Analytic
   const totalExpenseSum = expensesOnly.reduce((sum, tx) => sum + tx.amount, 0);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6" id="analytics-section">
-      
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-6 gap-y-8 mb-10 pb-8 border-b-2 border-indigo-100/70" id="analytics-section">
+
       {/* 1. Category Pie Chart */}
-      <div className="bg-white border border-neutral-100/80 rounded-3xl p-5 shadow-sm flex flex-col justify-between">
+      <div className="border-l-4 border-rose-400 pl-4 flex flex-col justify-between">
         <div>
           <h3 className="text-sm font-bold text-neutral-800 flex items-center gap-2 mb-1">
             <Milestone className="w-4 h-4 text-rose-500" />
@@ -132,7 +132,7 @@ export default function AnalyticsCharts({ transactions, activeMember }: Analytic
       </div>
 
       {/* 2. Last Days Expense Trends */}
-      <div className="bg-white border border-neutral-100/80 rounded-3xl p-5 shadow-sm">
+      <div className="border-l-4 border-emerald-400 pl-4">
         <h3 className="text-sm font-bold text-neutral-800 flex items-center gap-2 mb-1">
           <TrendingUp className="w-4 h-4 text-emerald-500" />
           日別支出の推移
@@ -150,7 +150,7 @@ export default function AnalyticsCharts({ transactions, activeMember }: Analytic
                 <XAxis dataKey="date" tickLine={false} axisLine={false} fontSize={10} tick={{ fill: '#a3a3a3' }} />
                 <YAxis hide tickFormatter={(v) => `${v / 1000}k`} />
                 <Tooltip formatter={(value: any) => formatYen(value)} cursor={{ fill: '#f5f5f5', radius: 8 }} />
-                <Bar dataKey="amount" fill="#171717" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="amount" fill="#10b981" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -158,7 +158,7 @@ export default function AnalyticsCharts({ transactions, activeMember }: Analytic
       </div>
 
       {/* 3. Payment Method Breakdown */}
-      <div className="bg-white border border-neutral-100/80 rounded-3xl p-5 shadow-sm flex flex-col justify-between">
+      <div className="border-l-4 border-indigo-400 pl-4 flex flex-col justify-between">
         <div>
           <h3 className="text-sm font-bold text-neutral-800 flex items-center gap-2 mb-1">
             <CreditCard className="w-4 h-4 text-indigo-500" />
@@ -189,9 +189,9 @@ export default function AnalyticsCharts({ transactions, activeMember }: Analytic
                     </span>
                     <span className="text-neutral-900">{formatYen(item.value)}</span>
                   </div>
-                  <div className="w-full bg-neutral-100 h-2 rounded-full overflow-hidden">
-                    <div 
-                      className="bg-neutral-800 h-full rounded-full transition-all duration-300"
+                  <div className="w-full bg-indigo-100 h-2 rounded-full overflow-hidden">
+                    <div
+                      className="bg-gradient-to-r from-indigo-600 to-violet-500 h-full rounded-full transition-all duration-300"
                       style={{ width: `${pct}%` }}
                     />
                   </div>

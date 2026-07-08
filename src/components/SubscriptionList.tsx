@@ -60,13 +60,11 @@ export default function SubscriptionList({ subscriptions, onAddSubscription, onD
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm mb-6" id="subscription-module">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 border-b border-gray-100 pb-4">
+    <div className="mb-6" id="subscription-module">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 pb-4 border-b-2 border-indigo-100/70">
         <div>
-          <div className="flex items-center gap-3.5">
-            <div className="bg-indigo-50 text-indigo-600 p-2 rounded-xl">
-              <Calendar className="w-5 h-5" />
-            </div>
+          <div className="flex items-center gap-2.5">
+            <Calendar className="w-5 h-5 text-cyan-600" />
             <div>
               <h3 className="text-sm font-extrabold text-gray-950">登録サブスクリプション＆定額支出</h3>
               <p className="text-xs text-gray-400 font-medium font-sans">月契約・年契約の固定支出（漏れ出費）を徹底防御</p>
@@ -76,12 +74,12 @@ export default function SubscriptionList({ subscriptions, onAddSubscription, onD
         <div className="flex items-center gap-4">
           <div className="text-right">
             <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block font-mono">月換算のサブスク総額:</span>
-            <span className="text-base font-black text-indigo-600 block leading-tight">{formatYen(totalMonthlyBurdens)}</span>
+            <span className="text-base font-black text-cyan-600 block leading-tight">{formatYen(totalMonthlyBurdens)}</span>
           </div>
           <button
             type="button"
             onClick={() => setShowForm(!showForm)}
-            className="bg-indigo-600 text-white rounded-lg px-3.5 py-2 text-xs font-bold hover:bg-indigo-700 flex items-center gap-1 cursor-pointer transition-all shadow-md shadow-indigo-100"
+            className="bg-gradient-to-r from-cyan-600 to-indigo-600 text-white rounded-full px-4 py-2 text-xs font-bold hover:brightness-110 flex items-center gap-1 cursor-pointer transition-all shadow-md shadow-cyan-200"
           >
             <Plus className="w-3.5 h-3.5 text-white" />
             <span>定額を追加</span>
@@ -90,7 +88,7 @@ export default function SubscriptionList({ subscriptions, onAddSubscription, onD
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-neutral-50 rounded-2xl p-4 mb-4 border border-neutral-200/50 space-y-3.5 animate-fadeIn">
+        <form onSubmit={handleSubmit} className="pb-5 mb-5 border-b-2 border-cyan-100 space-y-3.5 animate-fadeIn">
           <p className="text-xs font-bold text-neutral-800">📌 定額支払い（サブスク）の新規登録</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
             <div className="flex flex-col gap-1.5">
@@ -179,7 +177,7 @@ export default function SubscriptionList({ subscriptions, onAddSubscription, onD
             </button>
             <button
               type="submit"
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-md shadow-indigo-100 cursor-pointer"
+              className="bg-gradient-to-r from-cyan-600 to-indigo-600 hover:brightness-110 text-white px-4 py-2 rounded-full text-xs font-bold shadow-md shadow-cyan-200 cursor-pointer"
             >
               サブスクとして登録
             </button>
@@ -193,48 +191,44 @@ export default function SubscriptionList({ subscriptions, onAddSubscription, onD
           <p className="text-[10px] mt-1 font-mono">「定額を追加」ボタンから毎月・毎年の契約支払いを記録できます</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="divide-y divide-gray-100">
           {subscriptions.map((sub) => (
-            <div 
-              key={sub.id} 
+            <div
+              key={sub.id}
               id={`sub-item-${sub.id}`}
-              className="bg-gray-50 hover:bg-white border border-gray-200 rounded-xl p-5 flex flex-col justify-between transition-all duration-300 hover:shadow hover:border-indigo-100 group"
+              className="py-4 pl-4 border-l-4 border-cyan-400 flex flex-col sm:flex-row sm:items-center justify-between gap-2 group"
             >
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-[10px] bg-indigo-50 text-indigo-705 border border-indigo-100/40 rounded-full px-2.5 py-0.5 font-extrabold font-mono">
-                    {sub.period === 'monthly' ? '月額' : '年額'}定額
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[10px] bg-cyan-100 text-cyan-700 rounded-full px-2 py-0.5 font-extrabold font-mono shrink-0">
+                    {sub.period === 'monthly' ? '月額' : '年額'}
                   </span>
-                  <button
-                    type="button"
-                    onClick={() => onDeleteSubscription(sub.id)}
-                    className="text-gray-400 hover:text-rose-600 p-1.5 rounded-lg transition-colors cursor-pointer"
-                    title="サブスクを解除"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                  <h4 className="font-extrabold text-gray-900 text-sm truncate">{sub.name}</h4>
                 </div>
-
-                <h4 className="font-extrabold text-gray-900 text-sm mb-1">{sub.name}</h4>
-                
-                <div className="flex items-baseline gap-1 mt-1">
-                  <p className="text-lg font-black text-gray-950 leading-none">
-                    {formatYen(sub.amount)}
-                  </p>
-                  <span className="text-[10px] text-gray-400 font-mono">/回</span>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[10px] text-gray-500 font-semibold font-mono">
+                  <span className="flex items-center gap-1">
+                    <CreditCard className="w-3.5 h-3.5 opacity-60 text-indigo-600" /> {sub.paymentMethod}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <User className="w-3.5 h-3.5 opacity-60 text-indigo-600" /> {sub.payer}負担
+                  </span>
+                  <span>支払予定: {sub.nextPaymentDate}</span>
                 </div>
               </div>
 
-              <div className="mt-3.5 pt-2.5 border-t border-gray-100 pb-0.5 grid grid-cols-2 gap-y-1.5 text-[10px] text-gray-500 font-semibold font-mono">
-                <span className="flex items-center gap-1.5">
-                  <CreditCard className="w-3.5 h-3.5 opacity-60 text-indigo-600" /> {sub.paymentMethod}
-                </span>
-                <span className="flex items-center gap-1.5 justify-end">
-                  <User className="w-3.5 h-3.5 opacity-60 text-indigo-600" /> {sub.payer}負担
-                </span>
-                <div className="col-span-2 text-gray-400 flex items-center gap-1 mt-1">
-                  <span>支払予定: {sub.nextPaymentDate}</span>
-                </div>
+              <div className="flex items-center gap-3 shrink-0 pl-4">
+                <p className="text-lg font-black text-gray-950 leading-none">
+                  {formatYen(sub.amount)}
+                  <span className="text-[10px] text-gray-400 font-mono font-normal">/回</span>
+                </p>
+                <button
+                  type="button"
+                  onClick={() => onDeleteSubscription(sub.id)}
+                  className="text-gray-400 hover:text-rose-600 p-1.5 rounded-lg transition-colors cursor-pointer"
+                  title="サブスクを解除"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
               </div>
             </div>
           ))}
