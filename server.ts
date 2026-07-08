@@ -8,7 +8,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 // Enable large bodies for image uploads (receipt scans)
 app.use(express.json({ limit: "20mb" }));
@@ -20,16 +20,18 @@ function getAiClient(): GoogleGenAI | null {
   if (!aiClient) {
     const key = process.env.GEMINI_API_KEY;
     if (!key) {
-      console.warn("WARNING: GEMINI_API_KEY environment variable is not set. AI features will fallback to mock data.");
+      console.warn(
+        "WARNING: GEMINI_API_KEY environment variable is not set. AI features will fallback to mock data.",
+      );
       return null;
     }
     aiClient = new GoogleGenAI({
       apiKey: key,
       httpOptions: {
         headers: {
-          'User-Agent': 'aistudio-build',
-        }
-      }
+          "User-Agent": "aistudio-build",
+        },
+      },
     });
   }
   return aiClient;
@@ -45,7 +47,9 @@ app.post("/api/scan-receipt", async (req, res) => {
       // Graceful fallback if API key is missing
       return res.json({
         success: true,
-        merchantName: textFallback ? `模擬店舗 (${textFallback})` : "サンプルスーパー",
+        merchantName: textFallback
+          ? `模擬店舗 (${textFallback})`
+          : "サンプルスーパー",
         itemName: textFallback || "レシート商品一括",
         amount: Math.floor(Math.random() * 2000) + 500,
         category: "食費",
@@ -54,8 +58,8 @@ app.post("/api/scan-receipt", async (req, res) => {
         rawItems: [
           { name: "お肉", price: 450 },
           { name: "野菜パック", price: 280 },
-          { name: "牛乳", price: 210 }
-        ]
+          { name: "牛乳", price: 210 },
+        ],
       });
     }
 
@@ -65,8 +69,8 @@ app.post("/api/scan-receipt", async (req, res) => {
       contents.push({
         inlineData: {
           data: image,
-          mimeType: mimeType
-        }
+          mimeType: mimeType,
+        },
       });
     }
 
@@ -81,7 +85,7 @@ app.post("/api/scan-receipt", async (req, res) => {
     `;
 
     contents.push({
-      text: "レシートを読み取って合計金額、店名/商品名、カテゴリ、支払い方法、日付、個別商品を1つのJSONオブジェクトで返してください。"
+      text: "レシートを読み取って合計金額、店名/商品名、カテゴリ、支払い方法、日付、個別商品を1つのJSONオブジェクトで返してください。",
     });
 
     const response = await ai.models.generateContent({
@@ -96,23 +100,26 @@ app.post("/api/scan-receipt", async (req, res) => {
           properties: {
             itemName: {
               type: Type.STRING,
-              description: "店舗名、または代表的な商品名（例: イオン、マツモトキヨシ、カフェなど）"
+              description:
+                "店舗名、または代表的な商品名（例: イオン、マツモトキヨシ、カフェなど）",
             },
             amount: {
               type: Type.INTEGER,
-              description: "合計支払金額（数値のみ）"
+              description: "合計支払金額（数値のみ）",
             },
             category: {
               type: Type.STRING,
-              description: "食費、日用品、娯楽・交際、光熱費・通信、住宅・家賃、その他のいずれか"
+              description:
+                "食費、日用品、娯楽・交際、光熱費・通信、住宅・家賃、その他のいずれか",
             },
             paymentMethod: {
               type: Type.STRING,
-              description: "現金、クレジットカード、電子マネー、QRコード、口座引落のいずれか"
+              description:
+                "現金、クレジットカード、電子マネー、QRコード、口座引落のいずれか",
             },
             date: {
               type: Type.STRING,
-              description: "レシートに記載された日付 (YYYY-MM-DD)"
+              description: "レシートに記載された日付 (YYYY-MM-DD)",
             },
             rawItems: {
               type: Type.ARRAY,
@@ -122,24 +129,24 @@ app.post("/api/scan-receipt", async (req, res) => {
                 required: ["name", "price"],
                 properties: {
                   name: { type: Type.STRING, description: "品目名" },
-                  price: { type: Type.INTEGER, description: "価格" }
-                }
-              }
-            }
-          }
-        }
-      }
+                  price: { type: Type.INTEGER, description: "価格" },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     const jsonText = response.text || "{}";
     const result = JSON.parse(jsonText.trim());
     return res.json({ success: true, ...result });
-
   } catch (err: any) {
     console.error("Receipt Scan Error:", err);
     return res.status(500).json({
       success: false,
-      error: "レシートの解析に失敗しました。時間をおいてもう一度お試しください。"
+      error:
+        "レシートの解析に失敗しました。時間をおいてもう一度お試しください。",
     });
   }
 });
@@ -156,7 +163,8 @@ app.post("/api/parse-barcode", async (req, res) => {
         success: true,
         itemName: `バーコード商品 (JAN: ${barcode})`,
         predictedPrice: 198,
-        description: "本アプリは模擬モードで動作しています。Gemini APIキーを設定すると、実際のJANバーコードから正確な商品名と日本の小売店舗平均価格をリアルタイムに予測されます。"
+        description:
+          "本アプリは模擬モードで動作しています。Gemini APIキーを設定すると、実際のJANバーコードから正確な商品名と日本の小売店舗平均価格をリアルタイムに予測されます。",
       });
     }
 
@@ -180,23 +188,32 @@ app.post("/api/parse-barcode", async (req, res) => {
           type: Type.OBJECT,
           required: ["itemName", "predictedPrice", "description"],
           properties: {
-            itemName: { type: Type.STRING, description: "正確な商品名またはブランド名" },
-            predictedPrice: { type: Type.INTEGER, description: "推定される平均小売価格（円単位）" },
-            description: { type: Type.STRING, description: "この商品のプチ紹介、および関連するスマートな節約豆知識アドバイス" }
-          }
-        }
-      }
+            itemName: {
+              type: Type.STRING,
+              description: "正確な商品名またはブランド名",
+            },
+            predictedPrice: {
+              type: Type.INTEGER,
+              description: "推定される平均小売価格（円単位）",
+            },
+            description: {
+              type: Type.STRING,
+              description:
+                "この商品のプチ紹介、および関連するスマートな節約豆知識アドバイス",
+            },
+          },
+        },
+      },
     });
 
     const jsonText = response.text || "{}";
     const result = JSON.parse(jsonText.trim());
     return res.json({ success: true, ...result });
-
   } catch (err) {
     console.error("Barcode API Error:", err);
     return res.status(500).json({
       success: false,
-      error: "バーコードの解析に失敗しました。"
+      error: "バーコードの解析に失敗しました。",
     });
   }
 });
@@ -214,9 +231,12 @@ app.post("/api/ai-coaching", async (req, res) => {
           "現在の目標「" + (goal?.title || "貯金") + "」に向けて順調です！",
           "食費が支出の大部分を占めています。外食を週1回減らすだけで、約3,000円の節約につながります。",
           "登録されているサブスクリプションを時々見直し、近年使っていないものは解約を検討しましょう。",
-          "NISAの毎月の積立を設定されています。長期分散投資を続けることで、将来安定した資産形成がアシストされます。"
+          "NISAの毎月の積立を設定されています。長期分散投資を続けることで、将来安定した資産形成がアシストされます。",
         ],
-        forecast: "現在の収支ベースが続けば、設定されたの目標金額 " + (goal?.targetAmount || "50,000") + " 円には、予定されている期日までに【達成可能】と見込まれます。"
+        forecast:
+          "現在の収支ベースが続けば、設定されたの目標金額 " +
+          (goal?.targetAmount || "50,000") +
+          " 円には、予定されている期日までに【達成可能】と見込まれます。",
       });
     }
 
@@ -224,7 +244,7 @@ app.post("/api/ai-coaching", async (req, res) => {
       transactions: transactions?.slice(-30), // send last 30
       subscriptions,
       goal,
-      activeMember
+      activeMember,
     });
 
     const prompt = `
@@ -255,33 +275,37 @@ app.post("/api/ai-coaching", async (req, res) => {
             advices: {
               type: Type.ARRAY,
               items: { type: Type.STRING },
-              description: "個別具体的で、数値やカテゴリーを考慮した親身な節約・やりくりアドバイス 3〜4点"
+              description:
+                "個別具体的で、数値やカテゴリーを考慮した親身な節約・やりくりアドバイス 3〜4点",
             },
             forecast: {
               type: Type.STRING,
-              description: "今後数ヶ月の収支推移の予測と目標達成のためのマイルストーン・励ましコメント"
-            }
-          }
-        }
-      }
+              description:
+                "今後数ヶ月の収支推移の予測と目標達成のためのマイルストーン・励ましコメント",
+            },
+          },
+        },
+      },
     });
 
     const jsonText = response.text || "{}";
     const result = JSON.parse(jsonText.trim());
     return res.json({ success: true, ...result });
-
   } catch (err) {
     console.error("AI Coaching API Error:", err);
     return res.status(500).json({
       success: false,
-      error: "AIアドバイスの作成に失敗しました。"
+      error: "AIアドバイスの作成に失敗しました。",
     });
   }
 });
 
 // Setup Vite Dev server or asset folder for Express routing
 async function startServer() {
-  if (process.env.NODE_ENV !== "production") {
+  const isProduction =
+    process.env.NODE_ENV === "production" || process.env.RENDER === "true";
+
+  if (!isProduction) {
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
@@ -290,14 +314,13 @@ async function startServer() {
   } else {
     const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));
-    app.get("*", (req, res) => {
+    app.get("*", (_req, res) => {
       res.sendFile(path.join(distPath, "index.html"));
     });
   }
 
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`[Server] Household ledger server running on http://localhost:${PORT}`);
+    console.log(`[Server] Household ledger server running on port ${PORT}`);
   });
 }
-
 startServer();
