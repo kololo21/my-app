@@ -4,13 +4,19 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { 
-  INITIAL_TRANSACTIONS, 
-  INITIAL_SUBSCRIPTIONS, 
-  INITIAL_GOAL, 
-  CATEGORY_COLORS 
+import {
+  INITIAL_SUBSCRIPTIONS,
+  INITIAL_GOAL,
+  CATEGORY_COLORS
 } from './data';
 import { Transaction, Subscription, SavingGoal } from './types';
+import {
+  ReferenceData,
+  createTransaction as apiCreateTransaction,
+  deleteTransaction as apiDeleteTransaction,
+  fetchReferenceData,
+  fetchTransactions,
+} from './lib/api';
 
 // Components
 import Navigation from './components/Navigation';
@@ -25,11 +31,11 @@ import GoalAssistant from './components/GoalAssistant';
 import { Trash2, AlertCircle, RefreshCw, FileSpreadsheet, Search } from 'lucide-react';
 
 export default function App() {
-  // Sync with LocalStorage gracefully
-  const [transactions, setTransactions] = useState<Transaction[]>(() => {
-    const local = localStorage.getItem('kakeibo_transactions');
-    return local ? JSON.parse(local) : INITIAL_TRANSACTIONS;
-  });
+  // Transactions are persisted in the backend DB (Prisma). Loaded on mount below.
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [refData, setRefData] = useState<ReferenceData | null>(null);
+  const [isLoadingTransactions, setIsLoadingTransactions] = useState(true);
+  const [transactionsError, setTransactionsError] = useState<string | null>(null);
 
   const [subscriptions, setSubscriptions] = useState<Subscription[]>(() => {
     const local = localStorage.getItem('kakeibo_subscriptions');
@@ -46,11 +52,36 @@ export default function App() {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
-  // Trigger cache writes on state changes
+  // Load reference data (categories/payment methods/users) and transactions from the backend on mount
   useEffect(() => {
-    localStorage.setItem('kakeibo_transactions', JSON.stringify(transactions));
-  }, [transactions]);
+    let cancelled = false;
 
+    (async () => {
+      try {
+        setIsLoadingTransactions(true);
+        const ref = await fetchReferenceData();
+        const txs = await fetchTransactions(ref);
+        if (!cancelled) {
+          setRefData(ref);
+          setTransactions(txs);
+          setTransactionsError(null);
+        }
+      } catch (err) {
+        console.error('Failed to load transactions from backend:', err);
+        if (!cancelled) {
+          setTransactionsError('取引データの読み込みに失敗しました。バックエンドサーバーが起動しているか確認してください。');
+        }
+      } finally {
+        if (!cancelled) setIsLoadingTransactions(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Trigger cache writes on state changes
   useEffect(() => {
     localStorage.setItem('kakeibo_subscriptions', JSON.stringify(subscriptions));
   }, [subscriptions]);
@@ -60,16 +91,19 @@ export default function App() {
   }, [goal]);
 
   // Handler: Add a normal transaction
-  const handleAddTransaction = (newTx: Omit<Transaction, 'id'>) => {
-    const txObject: Transaction = {
-      ...newTx,
-      id: `tx-${Date.now()}`
-    };
-    setTransactions((prev) => [txObject, ...prev]);
+  const handleAddTransaction = async (newTx: Omit<Transaction, 'id'>) => {
+    if (!refData) return;
+    try {
+      const saved = await apiCreateTransaction(newTx, refData);
+      setTransactions((prev) => [{ ...saved, purpose: newTx.purpose }, ...prev]);
+    } catch (err) {
+      console.error('Failed to save transaction:', err);
+      alert('取引の保存に失敗しました。');
+    }
   };
 
   // Handler: Add from scan / barcode
-  const handleAddFromScanner = (scannedTx: {
+  const handleAddFromScanner = async (scannedTx: {
     itemName: string;
     amount: number;
     isIncome: boolean;
@@ -78,8 +112,8 @@ export default function App() {
     date: string;
     purpose: string;
   }) => {
-    const txObject: Transaction = {
-      id: `tx-${Date.now()}`,
+    if (!refData) return;
+    const newTx: Omit<Transaction, 'id'> = {
       itemName: scannedTx.itemName,
       amount: scannedTx.amount,
       isIncome: scannedTx.isIncome,
@@ -89,14 +123,26 @@ export default function App() {
       payer: activeMember === '全員' ? '自分' : activeMember,
       date: scannedTx.date
     };
-    setTransactions((prev) => [txObject, ...prev]);
-    // Send standard alert to UX (not windows alert) and switch to dashboard
-    setActiveTab('dashboard');
+    try {
+      const saved = await apiCreateTransaction(newTx, refData);
+      setTransactions((prev) => [{ ...saved, purpose: newTx.purpose }, ...prev]);
+      // Send standard alert to UX (not windows alert) and switch to dashboard
+      setActiveTab('dashboard');
+    } catch (err) {
+      console.error('Failed to save scanned transaction:', err);
+      alert('取引の保存に失敗しました。');
+    }
   };
 
   // Handler: Delete transaction
-  const handleDeleteTransaction = (id: string) => {
-    setTransactions((prev) => prev.filter((tx) => tx.id !== id));
+  const handleDeleteTransaction = async (id: string) => {
+    try {
+      await apiDeleteTransaction(id);
+      setTransactions((prev) => prev.filter((tx) => tx.id !== id));
+    } catch (err) {
+      console.error('Failed to delete transaction:', err);
+      alert('取引の削除に失敗しました。');
+    }
   };
 
   // Handler: Add Subscription
@@ -113,10 +159,9 @@ export default function App() {
     setSubscriptions((prev) => prev.filter((sub) => sub.id !== id));
   };
 
-  // Reset demo datasets
+  // Reset demo datasets (transactions are stored in the backend DB and are not reset here)
   const handleResetData = () => {
-    if (confirm('全てのデータを初期サンプル状態に戻しますか？')) {
-      setTransactions(INITIAL_TRANSACTIONS);
+    if (confirm('サブスク・貯金目標を初期サンプル状態に戻しますか？（家計簿の取引記録はDBに保存されているためリセットされません）')) {
       setSubscriptions(INITIAL_SUBSCRIPTIONS);
       setGoal(INITIAL_GOAL);
       setActiveMember('全員');
@@ -240,7 +285,15 @@ export default function App() {
                     </div>
                   </div>
 
-                  {filteredTransactions.length === 0 ? (
+                  {transactionsError ? (
+                    <div className="py-20 text-center text-rose-500 font-medium">
+                      <p className="text-xs">{transactionsError}</p>
+                    </div>
+                  ) : isLoadingTransactions ? (
+                    <div className="py-20 text-center text-neutral-400 font-medium">
+                      <p className="text-xs">読み込み中...</p>
+                    </div>
+                  ) : filteredTransactions.length === 0 ? (
                     <div className="py-20 text-center text-neutral-400 font-medium">
                       <p className="text-xs">条件に合致するレコードがありません</p>
                       <p className="text-[10px] mt-1 text-neutral-300">表示メンバーや検索条件を変更するか、新しい収支を追加してください</p>

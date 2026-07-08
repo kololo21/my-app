@@ -38,7 +38,7 @@ export default function GoalAssistant({ goal, transactions, subscriptions, onCha
   const fetchAiCoaching = async () => {
     setIsCoaching(true);
     try {
-      const response = await fetch('/api/ai-coaching', {
+      const response = await fetch('/coaching', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

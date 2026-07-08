@@ -44,10 +44,10 @@ export default function ScannerTools({ onAddFromScanner }: ScannerToolsProps) {
       if (selectedPreset) {
         // Send a request representing this preset to our server!
         // We can simulate an API call or actually send the preset's text/context
-        const response = await fetch('/api/scan-receipt', {
+        const response = await fetch('/ocr/receipt', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
+          body: JSON.stringify({
             textFallback: selectedPreset.name,
             image: null,
             mimeType: null
@@ -82,11 +82,11 @@ export default function ScannerTools({ onAddFromScanner }: ScannerToolsProps) {
           const mimeType = customReceiptFile.type;
 
           try {
-            const response = await fetch('/api/scan-receipt', {
+            const response = await fetch('/ocr/receipt', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ 
-                image: base64String, 
+              body: JSON.stringify({
+                image: base64String,
                 mimeType: mimeType,
                 textFallback: customReceiptFile.name
               })
@@ -123,7 +123,7 @@ export default function ScannerTools({ onAddFromScanner }: ScannerToolsProps) {
     setBarcodeMessage('');
 
     try {
-      const response = await fetch('/api/parse-barcode', {
+      const response = await fetch('/ocr/barcode', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ barcode: code })

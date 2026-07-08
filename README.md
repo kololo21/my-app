@@ -2,19 +2,24 @@
 <img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
 </div>
 
-# Run and deploy your AI Studio app
+# 多機能家計簿アプリ
 
-This contains everything you need to run your app locally.
+フロントエンド(React + Vite)とバックエンド(Express + TypeScript + Prisma、`backend/`)からなる家計簿アプリ。
 
-View your app in AI Studio: https://ai.studio/apps/becb871e-f4ab-4550-8c4e-e1926ce39aa1
+## ローカル実行
 
-## Run Locally
+**前提**: Node.js (v22系)
 
-**Prerequisites:**  Node.js
+1. 依存関係をインストール:
+   ```
+   npm install
+   cd backend && npm install && cd ..
+   ```
+2. （任意）`backend/.env` の `GEMINI_API_KEY` にGemini APIキーを設定するとレシートOCR・バーコード予測・AIコーチングが本物のAI応答になる。未設定でもモック応答で動作する。
+3. フロントエンド・バックエンドを同時に起動:
+   ```
+   npm start
+   ```
+   ブラウザで表示されたViteのURL（既定 http://localhost:5173）にアクセスする。
 
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+フロントエンドのみを起動したい場合は `npm run dev` を使う（この場合 `backend` は別途 `npm run dev --prefix backend` で起動する必要がある）。

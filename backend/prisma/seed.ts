@@ -15,6 +15,15 @@ const CATEGORIES = [
 
 const PAYMENT_METHODS = ["現金", "クレジットカード", "電子マネー", "QRコード", "口座引落"];
 
+// フロントエンドのメンバー切替UI(Navigation.tsx)の4名分と対応させた暫定ユーザー。
+// 認証機能が無いため、名前ベースでpayerと突き合わせるための仮アカウント。
+const USERS = [
+  { name: "自分", email: "self@kakeibo.local" },
+  { name: "父", email: "dad@kakeibo.local" },
+  { name: "母", email: "mom@kakeibo.local" },
+  { name: "共通", email: "shared@kakeibo.local" },
+];
+
 async function main() {
   for (const name of CATEGORIES) {
     await prisma.category.upsert({
@@ -32,7 +41,15 @@ async function main() {
     });
   }
 
-  console.log("Seed完了: カテゴリ・支払い方法を登録しました。");
+  for (const user of USERS) {
+    await prisma.user.upsert({
+      where: { email: user.email },
+      update: {},
+      create: { name: user.name, email: user.email },
+    });
+  }
+
+  console.log("Seed完了: カテゴリ・支払い方法・ユーザーを登録しました。");
 }
 
 main()

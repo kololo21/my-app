@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "kakeibo-fullstack",
+      "runtimeExecutable": "wsl.exe",
+      "runtimeArgs": ["-e", "bash", "-ic", "cd /home/harur/AI家計簿アプリ && npm start"],
+      "port": 5173
+    }
+  ]
+}
