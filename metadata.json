@@ -1,0 +1,6 @@
+{
+  "name": "AI家計簿 - 複数人・レシート・予測対応",
+  "description": "レシート自動読込、バーコード価格予測、複数人統合、サブスク管理、NISA記録、AI貯金アシスタント、収支予測を備えた高機能な家計簿アプリ",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
