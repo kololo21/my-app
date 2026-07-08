@@ -6,17 +6,17 @@ generator client {
 }
 
 datasource db {
-  // デフォルトはSQLite（ローカル開発向け）。本番でPostgreSQLに切り替える場合は
-  // provider = "postgresql" とし、DATABASE_URLを接続文字列に変更する。
-  provider = "sqlite"
+  // Render等の本番環境で永続化するためPostgreSQLを使用する。
+  // ローカル開発でも同じPostgreSQL接続文字列(DATABASE_URL)を使う。
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 // 収支の種別（支出 / 収入 / NISA積立）と定期支払いの周期は、
-// SQLiteコネクタがネイティブenumをサポートしないためString型で保持する。
+// 元々SQLiteコネクタ向けにString型で保持していた名残でそのまま維持している。
 // 値は "EXPENSE" | "INCOME" | "NISA"、"MONTHLY" | "YEARLY" のいずれかとし、
 // 妥当性はアプリケーション層(zod, src/common/enums.ts)で検証する。
-// PostgreSQLに切り替える際はネイティブenumへの移行を検討可能。
+// ネイティブenumへの移行は今後の任意対応。
 
 model User {
   id            String         @id @default(cuid())

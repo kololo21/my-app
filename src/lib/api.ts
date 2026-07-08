@@ -5,6 +5,15 @@
 
 import { Transaction } from '../types';
 
+// 本番ビルドではフロントエンドとバックエンドが別ドメインにデプロイされるため、
+// VITE_API_BASE_URL（例: https://kakeibo-backend.onrender.com）でバックエンドの絶対URLを指定する。
+// 未設定の場合は相対パスのままとなり、ローカル開発ではvite.config.tsのproxy経由でbackendに届く。
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+
+function apiUrl(path: string): string {
+  return `${API_BASE_URL}${path}`;
+}
+
 export interface ReferenceData {
   categoryNameToId: Record<string, string>;
   categoryIdToName: Record<string, string>;
@@ -36,9 +45,9 @@ async function parseJson(response: Response) {
 // カテゴリ・支払い方法・ユーザーのマスタを取得し、name⇄id変換表を組み立てる
 export async function fetchReferenceData(): Promise<ReferenceData> {
   const [categoriesRes, paymentMethodsRes, usersRes] = await Promise.all([
-    fetch('/categories'),
-    fetch('/payment-methods'),
-    fetch('/users'),
+    fetch(apiUrl('/categories')),
+    fetch(apiUrl('/payment-methods')),
+    fetch(apiUrl('/users')),
   ]);
 
   const [categoriesData, paymentMethodsData, usersData] = await Promise.all([
@@ -96,7 +105,7 @@ function toFrontendTransaction(tx: BackendTransaction, ref: ReferenceData): Tran
 }
 
 export async function fetchTransactions(ref: ReferenceData): Promise<Transaction[]> {
-  const response = await fetch('/transactions?pageSize=100');
+  const response = await fetch(apiUrl('/transactions?pageSize=100'));
   const data = await parseJson(response);
   return (data.transactions as BackendTransaction[]).map((tx) => toFrontendTransaction(tx, ref));
 }
@@ -107,7 +116,7 @@ export async function createTransaction(
 ): Promise<Transaction> {
   const type = tx.category === 'NISA積立' ? 'NISA' : tx.isIncome ? 'INCOME' : 'EXPENSE';
 
-  const response = await fetch('/transactions', {
+  const response = await fetch(apiUrl('/transactions'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -126,7 +135,7 @@ export async function createTransaction(
 }
 
 export async function deleteTransaction(id: string): Promise<void> {
-  const response = await fetch(`/transactions/${id}`, { method: 'DELETE' });
+  const response = await fetch(apiUrl(`/transactions/${id}`), { method: 'DELETE' });
   if (!response.ok && response.status !== 204) {
     const data = await response.json().catch(() => ({}));
     throw new Error(data.error || '取引の削除に失敗しました。');

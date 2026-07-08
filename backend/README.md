@@ -16,15 +16,19 @@ prisma/
 
 ## セットアップ手順
 
+PostgreSQLが必要（ローカル開発・本番共通）。Renderの無料PostgreSQLをローカル開発でもそのまま使うか、
+自前のローカルPostgresを用意する。
+
 ```bash
 cd backend
 npm install
 cp .env.example .env
+# .env の DATABASE_URL を実際のPostgreSQL接続文字列に書き換える
 
-# DBスキーマ反映 (SQLiteのdev.dbを作成)
-npx prisma migrate dev --name init
+# DBスキーマ反映 (マイグレーション履歴を持たずスキーマを直接同期)
+npm run prisma:push
 
-# カテゴリ・支払い方法の初期データ投入
+# カテゴリ・支払い方法・ユーザー(自分/父/母/共通)の初期データ投入
 npm run prisma:seed
 
 # 開発サーバー起動 (http://localhost:4000)
@@ -74,12 +78,11 @@ curl "http://localhost:4000/transactions?userId=<userId>&type=EXPENSE&dateFrom=2
 }
 ```
 
-## 補足: SQLiteとenum
+## 補足: enum
 
-SQLiteコネクタはPrismaのネイティブenumをサポートしないため、`Transaction.type` と
-`Subscription.period` はスキーマ上 `String` で保持している。値の妥当性は
-`src/common/enums.ts` の定数とzod（`transaction.dto.ts`）でアプリケーション層にて検証する。
-将来PostgreSQLへ切り替える場合は、ネイティブenumへの移行を検討してよい。
+`Transaction.type` と `Subscription.period` はスキーマ上 `String` で保持している（元々SQLite向けの設計の名残）。
+値の妥当性は `src/common/enums.ts` の定数とzod（`transaction.dto.ts`）でアプリケーション層にて検証する。
+ネイティブenumへの移行は今後の任意対応。
 
 ### DELETE /transactions/:id の使用例
 
@@ -110,9 +113,14 @@ curl "http://localhost:4000/analysis/summary?userId=<userId>&dateFrom=2026-06-01
 }
 ```
 
+## 実装済み(追加分)
+
+- `POST /ocr/receipt`, `POST /ocr/barcode`: レシートOCR・バーコード価格予測(Gemini、APIキー未設定時はモック応答)
+- `POST /coaching`: AI貯金コーチング(Gemini、APIキー未設定時はモック応答)
+- `GET /categories`, `GET /payment-methods`, `GET /users`: フロントエンドのname⇄id変換用マスタ取得
+
 ## 未実装 (次のステップ)
 
 - `GET /analysis/forecast`
-- `POST /ocr/receipt`（既存のプロトタイプ `server.ts` の `/api/scan-receipt` をこちらに統合予定）
-- `GET /saving-goals`
-- User/Group作成API（今のところPOST /transactionsはuserId/categoryId/paymentMethodIdが事前に存在する前提）
+- `GET /saving-goals`、`Subscription`/`SavingGoal`のDB永続化（現状フロントエンドのlocalStorageのまま）
+- User/Group作成API（現状は`prisma/seed.ts`で自分/父/母/共通の4ユーザーを固定シードする暫定対応。認証機能はまだ無い）

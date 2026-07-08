@@ -7,6 +7,7 @@ import React, { useState, useRef } from 'react';
 import { Camera, Receipt, FileText, Upload, Sparkles, Check, RefreshCw, Barcode, HelpCircle } from 'lucide-react';
 import { DEMO_RECEIPTS, DEMO_BARCODES } from '../data';
 import { ReceiptScanResult, BarcodeResult } from '../types';
+import { API_BASE_URL } from '../lib/api';
 
 interface ScannerToolsProps {
   onAddFromScanner: (tx: {
@@ -44,7 +45,7 @@ export default function ScannerTools({ onAddFromScanner }: ScannerToolsProps) {
       if (selectedPreset) {
         // Send a request representing this preset to our server!
         // We can simulate an API call or actually send the preset's text/context
-        const response = await fetch('/ocr/receipt', {
+        const response = await fetch(`${API_BASE_URL}/ocr/receipt`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -82,7 +83,7 @@ export default function ScannerTools({ onAddFromScanner }: ScannerToolsProps) {
           const mimeType = customReceiptFile.type;
 
           try {
-            const response = await fetch('/ocr/receipt', {
+            const response = await fetch(`${API_BASE_URL}/ocr/receipt`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
@@ -123,7 +124,7 @@ export default function ScannerTools({ onAddFromScanner }: ScannerToolsProps) {
     setBarcodeMessage('');
 
     try {
-      const response = await fetch('/ocr/barcode', {
+      const response = await fetch(`${API_BASE_URL}/ocr/barcode`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ barcode: code })

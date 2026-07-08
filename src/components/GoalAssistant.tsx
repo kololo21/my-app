@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { Goal, Sparkles, TrendingUp, RefreshCw, Calendar, Award, ShieldAlert, LineChart } from 'lucide-react';
 import { SavingGoal, Transaction, Subscription } from '../types';
+import { API_BASE_URL } from '../lib/api';
 
 interface GoalAssistantProps {
   goal: SavingGoal;
@@ -38,7 +39,7 @@ export default function GoalAssistant({ goal, transactions, subscriptions, onCha
   const fetchAiCoaching = async () => {
     setIsCoaching(true);
     try {
-      const response = await fetch('/coaching', {
+      const response = await fetch(`${API_BASE_URL}/coaching`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
